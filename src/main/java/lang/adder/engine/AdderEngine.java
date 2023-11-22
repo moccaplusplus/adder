@@ -44,7 +44,8 @@ public class AdderEngine extends AbstractScriptEngine {
         var tokenStream = new CommonTokenStream(lexer);
         var parser = new AdderParser(tokenStream);
         var tree = parser.start();
-        var visitor = new AdderVisitorImpl();
-        return visitor.visit(tree);
+        var visitor = new AdderVisitorImpl(context);
+        visitor.visit(tree);
+        return visitor.getResult();
     }
 }
