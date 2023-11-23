@@ -43,29 +43,29 @@ public class AdderVisitorImpl extends AdderBaseVisitor<Void> {
 
     @Override
     public Void visitAssignExpr(AdderParser.AssignExprContext ctx) {
-        var bindings = context.getBindings(ScriptContext.ENGINE_SCOPE);
         var varName = ctx.ID().getText();
+        int scope = context.getAttributesScope(varName);
         // throw if not exists
-        if (!bindings.containsKey(varName)) {
+        if (scope == -1) {
             throw new IllegalArgumentException("Var not exists"); // TODO: proper exception
         }
         visit(ctx.expr());
         var value = stack.peek();
         // save
-        bindings.put(varName, value);
+        context.setAttribute(varName, value, scope);
 
         return null;
     }
 
     @Override
     public Void visitVarReadExpr(AdderParser.VarReadExprContext ctx) {
-        var bindings = context.getBindings(ScriptContext.ENGINE_SCOPE);
         var varName = ctx.ID().getText();
         // throw if not exists
-        if (!bindings.containsKey(varName)) {
+        int scope = context.getAttributesScope(varName);
+        if (scope == -1) {
             throw new IllegalArgumentException("Var not exists"); // TODO: proper exception
         }
-        var value = (Integer) bindings.get(varName);
+        var value = (Integer) context.getAttribute(varName, scope);
         stack.push(value);
         return null;
     }
@@ -89,9 +89,50 @@ public class AdderVisitorImpl extends AdderBaseVisitor<Void> {
     }
 
     @Override
+    public Void visitAndOrExpr(AdderParser.AndOrExprContext ctx) {
+        visitBooleanExpr(ctx.expr(0), ctx.expr(1), ctx.op);
+        return null;
+    }
+
+    @Override
+    public Void visitCompareExpr(AdderParser.CompareExprContext ctx) {
+        visitBooleanExpr(ctx.expr(0), ctx.expr(1), ctx.op);
+        return null;
+    }
+
+    @Override
+    public Void visitEqualsExpr(AdderParser.EqualsExprContext ctx) {
+        visitBooleanExpr(ctx.expr(0), ctx.expr(1), ctx.op);
+        return null;
+    }
+
+    @Override
     public Void visitExprStat(AdderParser.ExprStatContext ctx) {
         visit(ctx.expr());
         result = stack.pop();
+        return null;
+    }
+
+    @Override
+    public Void visitIfStat(AdderParser.IfStatContext ctx) {
+        visit(ctx.expr());
+        var value = stack.pop();
+        if (asBoolean(value)) {
+            visit(ctx.thenBlock());
+        } else if (ctx.elseBlock() != null) {
+            visit(ctx.elseBlock());
+        }
+        return null;
+    }
+
+    @Override
+    public Void visitWhileStat(AdderParser.WhileStatContext ctx) {
+        while (true) {
+            visit(ctx.expr());
+            var value = stack.pop();
+            if (!asBoolean(value)) break;
+            visit(ctx.thenBlock());
+        }
         return null;
     }
 
@@ -104,7 +145,7 @@ public class AdderVisitorImpl extends AdderBaseVisitor<Void> {
         var left = stack.pop();
         visit(rightExpr);
         var right = stack.pop();
-        var value =  switch (op.getType()) {
+        var value = switch (op.getType()) {
             case AdderParser.PLUS -> left + right;
             case AdderParser.MINUS -> left - right;
             case AdderParser.MUL -> left * right;
@@ -112,5 +153,28 @@ public class AdderVisitorImpl extends AdderBaseVisitor<Void> {
             default -> throw new IllegalStateException("Impossible to happen");
         };
         stack.push(value);
+    }
+
+    private void visitBooleanExpr(AdderParser.ExprContext leftExpr, AdderParser.ExprContext rightExpr, Token op) {
+        visit(leftExpr);
+        var left = stack.pop();
+        visit(rightExpr);
+        var right = stack.pop();
+        var value = switch (op.getType()) {
+            case AdderParser.EQ -> left == right;
+            case AdderParser.NEQ -> left != right;
+            case AdderParser.LT -> left < right;
+            case AdderParser.LTE -> left <= right;
+            case AdderParser.GT -> left > right;
+            case AdderParser.GTE -> left >= right;
+            case AdderParser.AND -> asBoolean(left) && asBoolean(right);
+            case AdderParser.OR -> asBoolean(left) || asBoolean(right);
+            default -> throw new IllegalStateException("Impossible to happen");
+        };
+        stack.push(value ? 1 : 0);
+    }
+
+    private static boolean asBoolean(Integer value) {
+        return value != null && value != 0;
     }
 }

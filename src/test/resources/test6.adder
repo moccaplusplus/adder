@@ -1,0 +1,19 @@
+def a = 10
+def b = 8
+def c
+def d = 100
+def e
+
+if a < b then
+    c = b - a
+    e = 1
+else
+    c = a - b
+    e = 0
+end
+
+def i = 0
+while i < 4 then
+    d = d / 2
+    i = i + 1
+end

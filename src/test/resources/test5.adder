@@ -1,0 +1,2 @@
+def result = (a + b) * c
+result

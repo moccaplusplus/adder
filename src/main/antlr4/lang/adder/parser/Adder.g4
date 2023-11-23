@@ -1,17 +1,26 @@
 grammar Adder;
 
-start: (stat? END)* stat? EOF?;
+start: stat* EOF?;
 stat:
-      'def' ID ('=' expr)?             # varDeclStat
-    | expr                             # exprStat
+      'def' ID ('=' expr)?                           # varDeclStat
+    | 'if' expr thenBlock elseBlock? 'end'           # ifStat
+    | 'while' expr thenBlock 'end'                   # whileStat
+    | expr                                           # exprStat
+    | END+                                           # endStat
     ;
+thenBlock: 'then' stat+;
+elseBlock: 'else' stat+;
+
 expr:
-      INT                              # intLiteralExpr
-    | ID                               # varReadExpr
-    | '(' expr ')'                     # nestedExpr
-    | expr op=(MUL | DIV) expr         # mulDivExpr
-    | expr op=(PLUS | MINUS) expr      # plusMinusExpr
-    | ID '=' expr                      # assignExpr
+      INT                                           # intLiteralExpr
+    | ID                                            # varReadExpr
+    | '(' expr ')'                                  # nestedExpr
+    | expr op=(MUL | DIV) expr                      # mulDivExpr
+    | expr op=(PLUS | MINUS) expr                   # plusMinusExpr
+    | expr op=(LT | LTE | GT | GTE) expr            # compareExpr
+    | expr op=(EQ | NEQ) expr                       # equalsExpr
+    | expr op=(AND | OR) expr                       # andOrExpr
+    | ID '=' expr                                   # assignExpr
     ;
 
 fragment DIGIT: [0-9];
@@ -21,6 +30,15 @@ PLUS: '+';
 MINUS: '-';
 MUL: '*';
 DIV: '/';
+
+LT: '<';
+LTE: '<=';
+GT: '>';
+GTE: '>=';
+EQ: '==';
+NEQ: '!=';
+AND: 'and';
+OR: 'or';
 
 ID: ('_' | CHARACTER) ('_' | CHARACTER | DIGIT)*;
 
