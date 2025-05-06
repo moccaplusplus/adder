@@ -1,6 +1,17 @@
 lexer grammar AdderLexer;
 
+options {
+    superClass = LexerExt;
+}
+
+tokens {
+    BEGIN, END
+}
+
 DEF: 'def';
+IF: 'if';
+ELSE: 'else';
+WHILE: 'while';
 
 COLON: ':';
 COMMA: ',';
@@ -30,6 +41,7 @@ T_INT: 'int';
 T_FLOAT: 'float';
 T_BOOL: 'bool';
 T_VOID: 'void';
+T_CHAR: 'char';
 T_STRING: 'string';
 
 NONE: 'none';
@@ -41,19 +53,13 @@ BOOL: 'true' | 'false';
 
 ID: [a-zA-Z_][a-zA-Z0-9_]*;
 
-STRING:  '"' ( ESC_CHAR | ~('\\'|'"') )* '"';
+CHAR:  '\'' CHAR_LITERAL '\'';
+STRING:  '"' CHAR_LITERAL* '"';
+fragment CHAR_LITERAL: ESC_CHAR | ~('\\'|'"');
 fragment ESC_CHAR: '\\' ('b'|'t'|'n'|'f'|'r'|'"'|'\''|'\\');
 
-NEWLINE : ( '\r'? '\n' | '\r' ) {
-//	if (pendingDent) { setChannel(HIDDEN); }
-//	pendingDent = true;
-//	indentCount = 0;
-//	initialIndentToken = null;
-} ;
-
-WS : [ \t]+ -> channel(HIDDEN);
-
-INDENT : 'INDENT' -> channel(HIDDEN);
-DEDENT : 'DEDENT' -> channel(HIDDEN);
+NL: ( '\r'? '\n' | '\r' );
+TAB: ('\t' | '    ') -> channel(HIDDEN);
+WS: ' ' -> channel(HIDDEN);
 
 COMMENT: ( '//' ~[\r\n]* | '/*' .*? '*/' ) -> skip;

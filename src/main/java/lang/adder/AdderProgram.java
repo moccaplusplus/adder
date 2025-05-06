@@ -1,45 +1,45 @@
 package lang.adder;
 
-import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.Recognizer;
 
-import javax.script.CompiledScript;
-import javax.script.ScriptContext;
-import javax.script.ScriptException;
+import java.io.IOException;
+import java.io.Reader;
 
-public class AdderProgram extends CompiledScript {
-    private final AdderEngine engine;
+public class AdderProgram {
     private final AdderParser.StartContext parseTree;
 
-    public AdderProgram(AdderEngine engine, AdderParser.StartContext parseTree) {
-        this.engine = engine;
+    public AdderProgram(AdderParser.StartContext parseTree) {
         this.parseTree = parseTree;
     }
 
-    @Override
-    public Object eval(ScriptContext context) throws ScriptException {
+    public Object eval() {
         // TODO: implement visitor
         // TODO: replace with AST visitor not generated parse tree visitor
         //  (generated visitor's ancestor will be used for transformation to AST instead).
-        var visitor = new AdderParserBaseVisitor<>();
-        try {
-            return visitor.visit(parseTree);
-        } catch (ParseException e) {
-            throw (ScriptException) e.getCause();
-        } catch (RuntimeException e) {
-            throw new ScriptException(e);
-        }
+        var visitor = new AdderVisitorImpl();
+        visitor.visit(parseTree);
+        return visitor.getResult();
     }
 
-    @Override
-    public AdderEngine getEngine() {
-        return engine;
+    public static Object eval(String script) {
+        return compile(script).eval();
     }
 
-    public static AdderProgram compile(AdderEngine engine, CharStream charStream) {
+    public static Object eval(Reader reader) throws IOException {
+        return compile(reader).eval();
+    }
+
+    public static AdderProgram compile(String script) {
+        return compile(CharStreams.fromString(script));
+    }
+
+    public static AdderProgram compile(Reader reader) throws IOException {
+        return compile(CharStreams.fromReader(reader));
+    }
+
+    private static AdderProgram compile(CharStream charStream) {
         // custom error listener
         var errorListener = new ParseErrorListener();
 
@@ -47,6 +47,7 @@ public class AdderProgram extends CompiledScript {
         var lexer = new AdderLexer(charStream);
         lexer.removeErrorListeners();
         lexer.addErrorListener(errorListener);
+
         var tokenStream = new CommonTokenStream(lexer);
 
         // create parse tree
@@ -57,21 +58,7 @@ public class AdderProgram extends CompiledScript {
 
         // TODO: add transformation form Parse-Tree to AST. (Semantic analysis)
 
-        return new AdderProgram(engine, parseTree);
+        return new AdderProgram(parseTree);
     }
 
-    public static class ParseErrorListener extends BaseErrorListener {
-        @Override
-        public void syntaxError(
-                Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg,
-                RecognitionException e) {
-            throw new ParseException(new ScriptException(msg, null, line, charPositionInLine));
-        }
-    }
-
-    public static class ParseException extends RuntimeException {
-        public ParseException(ScriptException cause) {
-            super(cause);
-        }
-    }
 }

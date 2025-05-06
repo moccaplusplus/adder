@@ -9,10 +9,13 @@ options {
 start: stat* EOF?;
 
 stat:
-      DEF ID COLON typeSpec                         # varDeclStat
-    | DEF ID (COLON typeSpec)? ASSIGN expr          # varDeclAssignStat
-    | expr                                          # exprStat
-    | INDENT stat* DEDENT                           # blockStat
+      DEF ID COLON typeSpec NL                      # varDeclStat
+    | IF expr COLON stat (ELSE stat)? NL            # ifStat
+    | WHILE expr COLON stat NL                      # whileStat
+    | DEF ID (COLON typeSpec)? ASSIGN expr NL       # varDeclAssignStat
+    | expr NL                                       # exprStat
+    | BEGIN stat* END                               # blockStat
+    | NL                                            # emptyStat
     ;
 
 expr:
@@ -25,7 +28,8 @@ expr:
     | expr op=(EQ | NEQ) expr                       # equalsExpr
     | expr op=(AND | OR) expr                       # andOrExpr
     | STRING                                        # stringLiteralExpr
-    | BOOL                                          # booleanLiteralExpr
+    | CHAR                                          # charLiteralExpr
+    | BOOL                                          # boolLiteralExpr
     | FLOAT                                         # floatLiteralExpr
     | INT                                           # intLiteralExpr
     | NONE                                          # noneLiteralExpr
@@ -34,4 +38,4 @@ expr:
     ;
 
 typeSpec:
-    T_INT | T_FLOAT | T_BOOL | T_STRING | T_VOID;
+    T_INT | T_FLOAT | T_BOOL | T_CHAR | T_STRING | T_VOID;
