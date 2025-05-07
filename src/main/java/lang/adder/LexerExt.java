@@ -5,8 +5,11 @@ import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.Token;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 public abstract class LexerExt extends Lexer {
-    private final java.util.Queue<Token> queue = new java.util.LinkedList<>();
+    private final Queue<Token> queue = new LinkedList<>();
     private boolean counting = true;
     private int previousIndent;
     private int currentIndent;
@@ -19,12 +22,14 @@ public abstract class LexerExt extends Lexer {
     public void reset() {
         super.reset();
         counting = true;
+        queue.clear();
+        previousIndent = 0;
+        currentIndent = 0;
     }
 
     @Override
     public Token nextToken() {
         var nextToken = queue.isEmpty() ? super.nextToken() : queue.poll();
-
         if (counting) {
             if (nextToken.getType() == getTokenTypeMap().get("TAB")) {
                 currentIndent++;
@@ -33,12 +38,12 @@ public abstract class LexerExt extends Lexer {
             if (currentIndent > previousIndent) {
                 previousIndent++;
                 queue.offer(nextToken);
-                return newIndentToken(getTokenTypeMap().get("BEGIN"), nextToken);
+                return newIndentToken("BEGIN", nextToken);
             }
             if (currentIndent < previousIndent) {
                 previousIndent--;
                 queue.offer(nextToken);
-                return newIndentToken(getTokenTypeMap().get("END"), nextToken);
+                return newIndentToken("END", nextToken);
             }
             counting = false;
         }
@@ -50,12 +55,12 @@ public abstract class LexerExt extends Lexer {
         return nextToken;
     }
 
-    private Token newIndentToken(int type, Token token) {
-        var newToken = new CommonToken(type, "");
-        newToken.setStartIndex(token.getStartIndex());
-        newToken.setStopIndex(token.getStopIndex());
+    private Token newIndentToken(String type, Token token) {
+        var newToken = new CommonToken(getTokenTypeMap().get(type), type);
         newToken.setLine(token.getLine());
-        newToken.setCharPositionInLine(token.getCharPositionInLine() + token.getText().length());
+        newToken.setStartIndex(token.getStartIndex() - 1);
+        newToken.setStopIndex(token.getStartIndex() - 1);
+        newToken.setCharPositionInLine(token.getCharPositionInLine());
         return newToken;
     }
 }

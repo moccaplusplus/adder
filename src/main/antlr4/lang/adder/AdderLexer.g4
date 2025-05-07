@@ -58,7 +58,7 @@ STRING:  '"' CHAR_LITERAL* '"';
 fragment CHAR_LITERAL: ESC_CHAR | ~('\\'|'"');
 fragment ESC_CHAR: '\\' ('b'|'t'|'n'|'f'|'r'|'"'|'\''|'\\');
 
-NL: ( '\r'? '\n' | '\r' );
+NL: ( '\r'? '\n' | '\r' )+;
 TAB: ('\t' | '    ') -> channel(HIDDEN);
 WS: ' ' -> channel(HIDDEN);
 

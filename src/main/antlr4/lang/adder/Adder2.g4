@@ -1,4 +1,4 @@
-grammar Adder;
+grammar Adder2;
 
 @lexer::members {
     private final java.util.Queue<Token> queue = new java.util.LinkedList<>();

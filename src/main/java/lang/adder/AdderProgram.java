@@ -49,6 +49,7 @@ public class AdderProgram {
         lexer.addErrorListener(errorListener);
 
         var tokenStream = new CommonTokenStream(lexer);
+        tokenStream.consume();
 
         // create parse tree
         var parser = new AdderParser(tokenStream);
