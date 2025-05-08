@@ -9,13 +9,14 @@ options {
 start: stat* EOF?;
 
 stat:
-      DEF ID COLON typeSpec NL                      # varDeclStat
-    | IF expr COLON stat (ELSE stat)? NL            # ifStat
-    | WHILE expr COLON stat NL                      # whileStat
-    | DEF ID (COLON typeSpec)? ASSIGN expr NL       # varDeclAssignStat
-    | expr NL                                       # exprStat
+      DEF ID COLON typeSpec SC                      # varDeclStat
+    | DEF ID (COLON typeSpec)? ASSIGN expr SC       # varDeclAssignStat
+    | IF expr COLON stat (ELSE stat)? SC            # ifStat
+    | WHILE expr COLON stat SC                      # whileStat
+    | op=(BREAK | CONTINUE) SC                      # loopControlStat
+    | expr SC                                       # exprStat
     | BEGIN stat* END                               # blockStat
-    | NL                                            # emptyStat
+    | SC                                            # emptyStat
     ;
 
 expr:

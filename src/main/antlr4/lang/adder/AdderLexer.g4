@@ -1,22 +1,28 @@
 lexer grammar AdderLexer;
 
 options {
-    superClass = LexerExt;
+    superClass = IndentHandlingLexer;
 }
 
 tokens {
-    BEGIN, END
+    BEGIN, END, SC
 }
 
 DEF: 'def';
 IF: 'if';
 ELSE: 'else';
 WHILE: 'while';
+BREAK: 'break';
+CONTINUE: 'continue';
 
 COLON: ':';
 COMMA: ',';
 PAREN_L: '(';
 PAREN_R: ')';
+B_CURLY_L: '{';
+B_CURLY_R: '}';
+B_SQUARE_L: '[';
+B_SQUARE_R: ']';
 
 ASSIGN: '=';
 
@@ -58,7 +64,10 @@ STRING:  '"' CHAR_LITERAL* '"';
 fragment CHAR_LITERAL: ESC_CHAR | ~('\\'|'"');
 fragment ESC_CHAR: '\\' ('b'|'t'|'n'|'f'|'r'|'"'|'\''|'\\');
 
-NL: ( '\r'? '\n' | '\r' )+;
+ESC_NL: '\\' SINGLE_NL -> skip;
+NL: SINGLE_NL+ -> channel(HIDDEN);
+fragment SINGLE_NL: '\r'? '\n' | '\r';
+
 TAB: ('\t' | '    ') -> channel(HIDDEN);
 WS: ' ' -> channel(HIDDEN);
 

@@ -23,7 +23,6 @@
                 <configuration>
                     <visitor>true</visitor>
                     <listener>false</listener>
-                    <libDirectory>${project.build.directory}/generated-sources/antlr4</libDirectory>
                 </configuration>
                 <executions>
                     <execution>
