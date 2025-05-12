@@ -39,4 +39,4 @@ expr:
     ;
 
 typeSpec:
-    T_INT | T_FLOAT | T_BOOL | T_CHAR | T_STRING | T_VOID;
+    T_INT | T_FLOAT | T_BOOL | T_CHAR | T_STRING | T_VOID | typeSpec PAREN_L PAREN_R;

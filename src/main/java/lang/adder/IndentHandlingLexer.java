@@ -66,7 +66,6 @@ public abstract class IndentHandlingLexer extends Lexer {
                 return token;
             }
             queue.add(new Queued(token, true));
-
             countTabs = true;
             return newTokenInPlace(getTokenTypeMap().get("SC"), token);
         }
@@ -75,8 +74,11 @@ public abstract class IndentHandlingLexer extends Lexer {
             brackets.push(getTokenTypeMap().get("B_CURLY_R"));
         } else if (token.getType() == getTokenTypeMap().get("B_SQUARE_L")) {
             brackets.push(getTokenTypeMap().get("B_SQUARE_R"));
+        } else if (token.getType() == getTokenTypeMap().get("PAREN_L")) {
+            brackets.push(getTokenTypeMap().get("PAREN_R"));
         } else if (token.getType() == getTokenTypeMap().get("B_CURLY_R")
-                || token.getType() == getTokenTypeMap().get("B_SQUARE_R")) {
+                || token.getType() == getTokenTypeMap().get("B_SQUARE_R")
+                || token.getType() == getTokenTypeMap().get("PAREN_R")) {
             if (!brackets.isEmpty() && Objects.equals(brackets.peek(), token.getType())) {
                 brackets.pop();
             }

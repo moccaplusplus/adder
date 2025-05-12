@@ -1,0 +1,51 @@
+def f(a: int)->int:
+    return 2 * a
+
+def l: (int, int)->int
+
+def l: (int, int)->int = (a, b): b * a
+
+def l = (a: int)->int:
+    a = a + 1
+    return 2 * a
+
+a = int[5]
+a = int[3] { 1, 2, 3 }
+
+def a = 1
+def a: int
+
+def a: int[]
+def a: int[] = {
+   1,
+   2,
+   3
+}
+
+
+for n in a: print(n)
+while i < n: print(n)
+
+interface Iterator<T>:
+    next() -> T
+    hasNext() -> Bool
+
+interface Iterable<T>:
+    iterator() -> Iterator<T>
+
+class A:
+    i1: int
+    f2 = 0.1
+
+    init(i1: int):
+        self.i1 = i1
+
+    meth(i2: int) -> int:
+        return i1 * i2
+
+
+class B<T> extends A implements Iterable<Int>:
+    a: int[]
+    init(a: int[]):
+        super()
+        self.a = a

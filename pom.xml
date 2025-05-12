@@ -54,7 +54,7 @@
                                 <!-- enable gui -->
                                 <argument>-gui</argument>
                                 <!-- input file -->
-                                <argument>${project.build.testOutputDirectory}/test.add</argument>
+                                <argument>${project.basedir}/src/test/resources/test.add</argument>
                             </arguments>
                             <includePluginDependencies>true</includePluginDependencies>
                         </configuration>

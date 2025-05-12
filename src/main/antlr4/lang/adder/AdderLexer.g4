@@ -43,14 +43,14 @@ AND: 'and';
 OR: 'or';
 NOT: 'not';
 
-T_INT: 'int';
-T_FLOAT: 'float';
-T_BOOL: 'bool';
-T_VOID: 'void';
-T_CHAR: 'char';
-T_STRING: 'string';
+T_INT: 'Int';
+T_FLOAT: 'Float';
+T_BOOL: 'Bool';
+T_VOID: 'Void';
+T_CHAR: 'Char';
+T_STRING: 'String';
 
-NONE: 'none';
+NONE: 'null';
 
 INT: [0-9]+;
 FLOAT: [0-9]+ '.' [0-9]*;
