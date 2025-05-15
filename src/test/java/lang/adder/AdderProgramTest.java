@@ -23,6 +23,6 @@ class AdderProgramTest {
         var tokenStream = new CommonTokenStream(lexer);
         var parser = new AdderParser(tokenStream);
         var visitor = new AdderVisitorImpl();
-        visitor.visit(parser.start());
+        visitor.visit(parser.program());
     }
 }

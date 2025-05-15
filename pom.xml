@@ -23,6 +23,8 @@
                 <configuration>
                     <visitor>true</visitor>
                     <listener>false</listener>
+                    <libDirectory>${project.basedir}/target/generated-sources/antlr4</libDirectory>
+                    <outputDirectory>${project.basedir}/target/generated-sources/antlr4</outputDirectory>
                 </configuration>
                 <executions>
                     <execution>

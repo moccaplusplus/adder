@@ -4,18 +4,28 @@ options {
     superClass = IndentHandlingLexer;
 }
 
-tokens {
-    BEGIN, END, SC
-}
+//tokens {
+//    BEGIN, END, SC
+//}
+
+BEGIN: 'begin';
+END: 'end';
+SC: ';';
+
 
 DEF: 'def';
+TYPE_DEF: 'typedef';
 IF: 'if';
 ELSE: 'else';
 WHILE: 'while';
 BREAK: 'break';
 CONTINUE: 'continue';
+RETURN: 'return';
+
+ARROW: '->';
 
 COLON: ':';
+
 COMMA: ',';
 PAREN_L: '(';
 PAREN_R: ')';
@@ -57,7 +67,8 @@ FLOAT: [0-9]+ '.' [0-9]*;
 
 BOOL: 'true' | 'false';
 
-ID: [a-zA-Z_][a-zA-Z0-9_]*;
+ID: [a-z_][a-zA-Z0-9_]*;
+TYPE_ID: [A-Z][a-zA-Z0-9_]*;
 
 CHAR:  '\'' CHAR_LITERAL '\'';
 STRING:  '"' CHAR_LITERAL* '"';

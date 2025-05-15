@@ -3,15 +3,14 @@ package lang.adder;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.Token;
 
 import java.io.IOException;
 import java.io.Reader;
 
 public class AdderProgram {
-    private final AdderParser.StartContext parseTree;
+    private final AdderParser.ProgramContext parseTree;
 
-    public AdderProgram(AdderParser.StartContext parseTree) {
+    public AdderProgram(AdderParser.ProgramContext parseTree) {
         this.parseTree = parseTree;
     }
 
@@ -56,7 +55,7 @@ public class AdderProgram {
         var parser = new AdderParser(tokenStream);
         parser.removeErrorListeners();
         parser.addErrorListener(errorListener);
-        var parseTree = parser.start();
+        var parseTree = parser.program();
 
         // TODO: add transformation form Parse-Tree to AST. (Semantic analysis)
 
